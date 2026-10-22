@@ -1,0 +1,10 @@
+{
+  "name": "markdown-doc-site-builder",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Markdown Documentation Site Builder - RCPIT Group 20",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  }
+}

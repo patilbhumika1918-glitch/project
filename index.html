@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Markdown Documentation Site Builder | RCPIT Group 20</title>
+<meta name="description" content="Write Markdown, see it as a clean documentation page instantly, and export it as HTML. Semester Project-I, Group 20, RCPIT Shirpur.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<style>
+:root{--bg:#f4f6fa;--fg:#101828;--mut:#566075;--card:#fff;--bd:#d9dfe9;--ac:#17335f;--acd:#17335f;--onac:#fff;--hi:#b7791f;--code:#eaeef5;--r:8px}
+[data-theme=dark]{--bg:#0a1020;--fg:#e8ecf4;--mut:#9aa6bc;--card:#111a30;--bd:#243050;--ac:#8fb0ff;--acd:#a9c2ff;--onac:#0a1020;--hi:#e0a93b;--code:#18223d}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 Inter,system-ui,sans-serif}
+h1,h2,h3{font-family:'Source Serif 4',Inter,sans-serif;line-height:1.15;margin:0 0 .5em}
+a{color:var(--acd)}:focus-visible{outline:3px solid var(--hi);outline-offset:2px}
+.wrap{max-width:1100px;margin:auto;padding:0 20px}
+nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--bd)}
+nav .wrap{display:flex;align-items:center;gap:6px;height:60px;flex-wrap:wrap}
+.brand{font:800 1.15rem 'Source Serif 4';color:var(--fg);text-decoration:none;margin-right:auto}
+.brand b{color:var(--ac)}
+nav a.l{color:var(--mut);text-decoration:none;padding:6px 10px;border-radius:8px;font-size:.92rem}
+nav a.l:hover,nav a.on{color:var(--fg);background:var(--code)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--bd);background:var(--card);color:var(--fg);padding:8px 14px;border-radius:8px;font:500 .9rem Inter;cursor:pointer;text-decoration:none}
+.btn:hover{border-color:var(--ac)}.btn.p{background:var(--ac);border-color:var(--ac);color:var(--onac)}.btn.p:hover{background:var(--acd)}
+.btn.d:hover{border-color:#ef4444;color:#ef4444}
+section{padding:64px 0}
+.hero{padding:56px 0 40px}.hero .wrap{display:grid;grid-template-columns:1fr 1.15fr;gap:40px;align-items:center}
+.hero h1{font-size:clamp(2rem,4.4vw,3rem);font-weight:800;letter-spacing:-.02em}
+.hero p{color:var(--mut);font-size:1.1rem;max-width:46ch}
+.cta{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0}
+.demo{border:1px solid var(--bd);border-radius:14px;overflow:hidden;background:var(--card);box-shadow:0 14px 40px rgba(15,23,42,.12)}
+.demo .bar{padding:8px 14px;border-bottom:1px solid var(--bd);font:.75rem 'IBM Plex Mono';color:var(--mut);display:flex;justify-content:space-between}
+.demo .cols{display:grid;grid-template-columns:1fr 1fr;min-height:250px}
+.demo textarea{border:0;border-right:1px solid var(--bd);border-radius:0;min-height:250px}
+.demo .md{padding:12px 16px;font-size:.9rem;overflow:auto;max-height:290px}
+textarea,input,select{font:.92rem 'IBM Plex Mono',monospace;background:var(--card);color:var(--fg);border:1px solid var(--bd);border-radius:8px;padding:10px}
+textarea{width:100%;resize:none;line-height:1.6}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:20px}
+.card h3{font-size:1.1rem;margin-bottom:.3em}.card p{margin:0;color:var(--mut);font-size:.94rem}
+.sec-h{max-width:60ch;margin-bottom:28px}.sec-h p{color:var(--mut);margin:0}.sec-h h2{font-size:2rem}
+.steps{counter-reset:s;display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.steps div{counter-increment:s;border-left:4px solid var(--ac);padding:4px 0 4px 16px}
+.steps div:before{content:"Step " counter(s);font:500 .8rem 'IBM Plex Mono';color:var(--mut)}
+.steps b{display:block;font-family:'Source Serif 4';font-size:1.1rem}
+.alt{background:var(--card);border-block:1px solid var(--bd)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{border:1px solid var(--bd);background:var(--code);border-radius:99px;padding:4px 14px;font:500 .85rem 'IBM Plex Mono'}
+.chip.on{background:var(--ac);color:var(--onac);border-color:var(--ac)}button.chip{cursor:pointer;color:var(--fg)}
+table{border-collapse:collapse;width:100%}th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--bd);font-size:.93rem}th{color:var(--mut);font-weight:600}
+.tw{overflow-x:auto;border:1px solid var(--bd);border-radius:var(--r);background:var(--card)}
+.inst{background:var(--ac);color:var(--onac);text-align:center;font-size:.8rem;padding:6px 12px}
+.flow{display:flex;gap:10px;flex-wrap:wrap;align-items:stretch}.flow div{flex:1;min-width:170px;background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:14px;font-weight:600}.flow small{display:block;font-weight:400;color:var(--mut)}.flow span{align-self:center;color:var(--mut)}
+.card{border-top:3px solid var(--hi)}
+footer{padding:36px 0;border-top:1px solid var(--bd);color:var(--mut);font-size:.9rem}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+/* markdown body */
+.md h1{font-size:1.7rem}.md h2{font-size:1.35rem;margin-top:1.2em;border-bottom:1px solid var(--bd);padding-bottom:.2em}.md h3{font-size:1.1rem}
+.md code{font:.85em 'IBM Plex Mono';background:var(--code);padding:2px 5px;border-radius:4px}
+.md pre{background:var(--code);padding:12px;border-radius:8px;overflow:auto}.md pre code{padding:0;background:none}
+.md blockquote{margin:1em 0;padding:2px 14px;border-left:4px solid var(--hi);color:var(--mut)}
+.md img{max-width:100%}.md table{display:block;overflow-x:auto}
+/* editor */
+.ed{display:grid;grid-template-rows:auto auto 1fr;height:calc(100vh - 60px)}
+.tb{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:10px 20px;border-bottom:1px solid var(--bd);background:var(--card)}
+.tb input{flex:1;min-width:160px;font-family:Inter;font-weight:600}.tb .sp{flex:1}
+.tb .btn{padding:6px 10px}
+.stat{padding:6px 20px;font:.78rem 'IBM Plex Mono';color:var(--mut);display:flex;gap:16px;border-bottom:1px solid var(--bd);flex-wrap:wrap}
+.pane{display:grid;grid-template-columns:1fr 1fr;min-height:0}
+.pane textarea{height:100%;border:0;border-radius:0;border-right:1px solid var(--bd);padding:18px}
+.pv{overflow:auto;padding:18px 28px;background:var(--card)}
+.toc{font-size:.85rem;border:1px solid var(--bd);border-radius:8px;padding:8px 14px;margin-bottom:16px;background:var(--bg)}.toc a{display:block;color:var(--mut);text-decoration:none}.toc a:hover{color:var(--ac)}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 18px;border-radius:8px;z-index:50;font-size:.9rem}
+dialog{max-width:760px;width:92%;max-height:86vh;border:1px solid var(--bd);border-radius:14px;background:var(--card);color:var(--fg);padding:0}dialog::backdrop{background:rgba(0,0,0,.5)}
+dialog .h{display:flex;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--bd);position:sticky;top:0;background:var(--card)}dialog .md{padding:8px 24px 24px}
+.top{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:18px 0}.top input{flex:1;min-width:200px;font-family:Inter}
+.dc .chip{font-size:.75rem;padding:1px 10px}.dc .a{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}.dc small{color:var(--mut)}
+.empty{text-align:center;padding:50px 10px;color:var(--mut)}
+@media(max-width:820px){.hero .wrap,.pane{grid-template-columns:1fr}.ed{height:auto}.pane textarea{height:55vh;border-right:0;border-bottom:1px solid var(--bd)}.pv{min-height:50vh}}
+@media(max-width:520px){.demo .cols{grid-template-columns:1fr}.demo textarea{border-right:0;border-bottom:1px solid var(--bd);min-height:150px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="inst">The Shirpur Education Society's R. C. Patel Institute of Technology, Shirpur (Autonomous) · Department of Information Technology</div>
+<nav><div class="wrap">
+<a class="brand" href="/" data-nav>Doc<b>Builder</b></a>
+<a class="l" href="/" data-nav>Home</a><a class="l" href="/#about" data-nav>Synopsis</a><a class="l" href="/#team" data-nav>Team</a>
+<a class="l" href="/my-docs" data-nav id="nd">My Docs</a><a class="l" href="/editor" data-nav id="ne">Editor</a>
+<a class="l" href="/login" data-nav id="nl">Log in</a><button class="btn" id="th" aria-label="Toggle dark mode">Dark mode</button>
+</div></nav>
+<main id="app"></main>
+<footer><div class="wrap"><div><b>Markdown Documentation Site Builder</b><br>Department of Information Technology, Group No. 20<br>R. C. Patel Institute of Technology, Shirpur (Autonomous)</div><div>Guide: Prof. A.Z. Ansari<br>© 2025-2026 RCPIT Shirpur, Semester Project-I</div></div></footer>
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){toast('Browser storage is full or blocked. Export your document to keep it.')}}};
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const F='`'.repeat(3);
+const TAGS=['Guide','API','Database','Synopsis','Notes'];
+const TPL={
+'User manual':'# User Manual\n\nA short guide to getting started.\n\n## Getting started\n1. Open the application\n2. Create your first document\n3. Click **Save**\n\n> Tip: use the Export button to download a ready-to-share page.\n\n## Shortcuts\n| Action | Shortcut |\n|---|---|\n| Save | Ctrl + S |\n| Bold | Ctrl + B |\n',
+'API reference':'# Notes API\n\nBase URL: '+'`/api/v1`'+'\n\n## Create a note\n'+'`POST /notes`'+'\n\n'+F+'json\n{ "title": "Hello", "body": "First note" }\n'+F+'\n\n## Responses\n| Code | Meaning |\n|---|---|\n| 201 | Note created |\n| 400 | Missing title |\n',
+'Database schema':'# Database Schema\n\n## users\n| Column | Type | Notes |\n|---|---|---|\n| id | INT | Primary key |\n| email | VARCHAR(120) | Unique |\n\n## documents\n| Column | Type | Notes |\n|---|---|---|\n| id | INT | Primary key |\n| user_id | INT | Links to users.id |\n| markdown | TEXT | Source content |\n',
+'Project README':'# Project Title\n\nOne sentence on what this project does.\n\n## Features\n- Live preview\n- Export to HTML\n\n## Install\n'+F+'bash\ngit clone <repo-url>\n'+F+'\n'
+};
+const SEED=[
+{t:'Getting started with DocBuilder',g:'Guide',m:TPL['User manual']},
+{t:'Notes API',g:'API',m:TPL['API reference']},
+{t:'Database schema',g:'Database',m:TPL['Database schema']}
+];
+const toast=m=>{const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=m;document.body.append(t);setTimeout(()=>t.remove(),2200)};
+const html=md=>DOMPurify.sanitize(marked.parse(md,{gfm:true,breaks:false}));
+const title=md=>((md.match(/^#\s+(.+)$/m)||[])[1]||'Untitled document').trim();
+const docs=()=>{let d=store.get('db_docs',null);if(!d){d=SEED.map((s,i)=>({id:'d'+i,title:s.t,tag:s.g,md:s.m,at:Date.now()-i*36e5}));store.set('db_docs',d)}return d};
+const slug=s=>s.toLowerCase().replace(/[^\w]+/g,'-').replace(/^-|-$/g,'');
+function download(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function exportHTML(md,t){const css='body{font:17px/1.7 system-ui,sans-serif;max-width:780px;margin:40px auto;padding:0 20px;color:#0f172a}h1,h2,h3{line-height:1.2}h2{border-bottom:1px solid #dde3ec;padding-bottom:.2em}code{background:#eef2f7;padding:2px 5px;border-radius:4px}pre{background:#eef2f7;padding:12px;border-radius:8px;overflow:auto}pre code{padding:0}blockquote{border-left:4px solid #f59e0b;margin:1em 0;padding:2px 14px;color:#5b6678}table{border-collapse:collapse;width:100%}th,td{border-bottom:1px solid #dde3ec;padding:8px;text-align:left}';
+download(slug(t)+'.html','<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(t)+'</title><style>'+css+'</style></head><body>'+html(md)+'</body></html>','text/html')}
+
+/* ---------- Home ---------- */
+const DEMO='# Hello, docs\n\nType on the left. **Bold**, `code` and lists render on the right.\n\n- Fast\n- Clean\n- Exportable\n';
+function home(){
+$('#app').innerHTML=`
+<section class="hero"><div class="wrap"><div>
+<h1>Documentation websites from Markdown, with an AI writing assistant</h1>
+<p>A web-based platform that converts Markdown into structured, publish-ready documentation pages, with AI support for drafting, editing and summarising.</p>
+<div class="cta"><a class="btn p" href="/editor" data-nav>Open the editor</a><a class="btn" href="/my-docs" data-nav>Browse saved docs</a></div>
+<div class="chips"><span class="chip">Live preview</span><span class="chip">HTML + MD export</span><span class="chip">AI assistant</span><span class="chip">Dark mode</span></div></div>
+<div class="demo" aria-label="Live demo"><div class="bar"><span>try it here</span><span>markdown → html</span></div>
+<div class="cols"><textarea id="dm" aria-label="Markdown demo input">${esc(DEMO)}</textarea><div class="md" id="dp"></div></div></div></div></section>
+<section class="alt"><div class="wrap"><div class="sec-h"><h2>Everything you need to document a project</h2><p>Built for students and small teams who want good-looking docs without writing HTML by hand.</p></div>
+<div class="grid">
+<div class="card"><h3>Split-screen editor</h3><p>See every change instantly. Headings, tables, code blocks and quotes render as you type.</p></div>
+<div class="card"><h3>Formatting toolbar</h3><p>Add bold, links, lists, tables and code blocks with one click, no syntax to memorise.</p></div>
+<div class="card"><h3>Ready-made templates</h3><p>Start from a user manual, API reference, database schema or README.</p></div>
+<div class="card"><h3>Auto contents list</h3><p>A table of contents is built from your headings and links to each section.</p></div>
+<div class="card"><h3>Saved documents</h3><p>Search, filter by tag, duplicate, preview and delete. Drafts autosave while you type.</p></div>
+<div class="card"><h3>One-click export</h3><p>Download a standalone HTML page or the original .md file. Import existing .md files too.</p></div></div></div></section>
+<section id="ai"><div class="wrap"><div class="sec-h"><h2>AI writing assistant</h2><p>Built into the editor. Select text or work on the whole document, then review each suggestion before applying it.</p></div><div class="grid">
+<div class="card"><h3>Improve writing</h3><p>Refines clarity and professional tone while keeping your meaning.</p></div>
+<div class="card"><h3>Fix grammar</h3><p>Corrects spelling and grammar without rewording your text.</p></div>
+<div class="card"><h3>Summarise</h3><p>Condenses a long section into a short summary with key points.</p></div>
+<div class="card"><h3>Expand</h3><p>Adds detail, examples and structure to a short draft.</p></div>
+<div class="card"><h3>Outline</h3><p>Proposes a heading structure for a topic or rough notes.</p></div>
+<div class="card"><h3>Generate a document</h3><p>Describe a topic and receive a complete Markdown draft to edit.</p></div></div>
+<p style="color:var(--mut);margin-top:16px">Available to logged-in users. Suggestions are never applied automatically.</p></div></section>
+<section class="alt"><div class="wrap"><div class="sec-h"><h2>How it works</h2></div>
+<div class="steps"><div><b>Write</b>Type, paste or generate Markdown, or pick a template.</div><div><b>Preview</b>Check the rendered page beside your text and refine it with the AI assistant.</div><div><b>Publish</b>Save it to My Docs or export an HTML page to share.</div></div></div></section>
+<section id="about"><div class="wrap"><div class="sec-h"><h2>Project abstract</h2></div>
+<p style="max-width:75ch">Documentation helps users and developers understand a project, but writing it manually in HTML is slow. The <b>Markdown Documentation Site Builder</b> lets users write in simple Markdown and converts it automatically into well-structured HTML pages. It suits software documentation, user manuals, technical guides, educational notes and project reports.</p>
+<div class="chips" style="margin-top:14px"><span class="chip">Markdown</span><span class="chip">Documentation website</span><span class="chip">HTML5</span><span class="chip">CSS3</span><span class="chip">JavaScript</span><span class="chip">Node.js</span><span class="chip">Netlify Blobs</span><span class="chip">AI model API</span><span class="chip">Git &amp; GitHub</span></div>
+<h3 style="margin-top:28px">Objectives</h3><ul style="max-width:75ch;color:var(--mut)"><li>Simplify the creation of documentation websites using Markdown.</li><li>Provide a live split-screen preview with one-click HTML export.</li><li>Support secure accounts so documents are available on any device.</li><li>Assist authors with drafting and editing through an AI writing assistant.</li></ul></div></section>
+<section class="alt" id="tech"><div class="wrap"><div class="sec-h"><h2>System architecture</h2><p>The browser handles editing and rendering. A serverless backend handles accounts, storage and AI requests.</p></div>
+<div class="flow"><div>Browser<small>Editor and live preview</small></div><span>to</span><div>Netlify Functions<small>Authentication and API</small></div><span>to</span><div>Netlify Blobs<small>Users and documents</small></div><span>and</span><div>AI model API<small>Writing assistance</small></div></div>
+<div class="sec-h" style="margin-top:40px"><h2>Technology stack</h2></div><div class="grid">
+<div class="card"><h3>HTML5</h3><p>Semantic layout for the app and for exported pages.</p></div>
+<div class="card"><h3>CSS3</h3><p>Responsive design with light and dark themes.</p></div>
+<div class="card"><h3>JavaScript</h3><p>Live rendering with marked.js, sanitised with DOMPurify, plus export and storage.</p></div>
+<div class="card"><h3>Node.js and Netlify Functions</h3><p>Secure login, document storage and the AI endpoint.</p></div><div class="card"><h3>Netlify Blobs</h3><p>Cloud storage for user accounts and saved documents.</p></div></div></div></section>
+<section id="team"><div class="wrap"><div class="sec-h"><h2>Team and guide</h2><p>Group No. 20, Semester III, Department of Information Technology, RCPIT Shirpur.</p></div>
+<div class="tw"><table><tr><th>Roll No.</th><th>PRN</th><th>Student name</th></tr>
+<tr><td>IT040</td><td>251109054</td><td>Rutuja Mahendrakumar Mahajan</td></tr><tr><td>IT030</td><td>251109034</td><td>Tanushri Nitin Bhadhane</td></tr>
+<tr><td>IT033</td><td>251109045</td><td>Gayatri Vijaysing Thakur</td></tr><tr><td>IT059</td><td>251109076</td><td>Bhumika Chetan Patil</td></tr></table></div>
+<p>Project guide: <b>Prof. A.Z. Ansari</b></p></div></section>`;
+const i=$('#dm'),o=$('#dp'),u=()=>o.innerHTML=html(i.value);i.oninput=u;u();
+}
+
+/* ---------- Editor ---------- */
+function editor(){
+const q=new URLSearchParams(location.search),open=q.get('id');
+const d=store.get('db_draft',{id:null,md:TPL['Project README'],tag:'Guide'});
+let cur=open?docs().find(x=>x.id===open):null;
+if(cur)Object.assign(d,{id:cur.id,md:cur.md,tag:cur.tag});
+$('#app').innerHTML=`<div class="ed"><div class="tb">
+<input id="ti" aria-label="Document title" placeholder="Title (taken from your first heading)" readonly>
+<select id="tg" aria-label="Tag">${TAGS.map(t=>`<option>${t}</option>`).join('')}</select>
+<select id="tp" aria-label="Insert template"><option value="">Template…</option>${Object.keys(TPL).map(t=>`<option>${t}</option>`).join('')}</select>
+<span class="sp"></span><button class="btn p" id="sv">Save</button><button class="btn" id="eh">Export HTML</button><button class="btn" id="em">Export .md</button>
+<label class="btn">Import .md<input type="file" id="im" accept=".md,.markdown,.txt" hidden></label><button class="btn d" id="nw">New</button></div>
+<div class="tb" style="padding:6px 20px">${[['B','**','**','bold'],['I','_','_','italic'],['H2','\n## ','','heading'],['Code','`','`','code'],['Block','\n'+F+'\n','\n'+F+'\n','code'],['Link','[','](https://)','link text'],['List','\n- ','','item'],['Quote','\n> ','','quote'],['Table','\n| A | B |\n|---|---|\n| 1 | 2 |\n','','']].map(b=>`<button class="btn" data-b='${JSON.stringify(b.slice(1))}'>${b[0]}</button>`).join('')}</div>
+<div class="tb" style="padding:6px 20px"><b style="font-size:.85rem;margin-right:4px">AI assistant</b>${[['improve','Improve writing'],['grammar','Fix grammar'],['summarize','Summarise'],['expand','Expand'],['outline','Outline'],['generate','Generate…']].map(a=>`<button class="btn" data-ai="${a[0]}">${a[1]}</button>`).join('')}<small style="color:var(--mut)" id="aim">Uses the selected text, or the whole document</small></div>
+<div class="stat"><span id="st">Lines 0 · Words 0 · Characters 0 · 0 min read</span><span id="sa">${auth()?'Signed in: Save syncs to your account':'Not signed in: documents stay in this browser'}</span></div>
+<div class="pane"><textarea id="src" spellcheck="false" aria-label="Markdown source"></textarea><div class="pv"><div class="toc" id="toc" hidden></div><div class="md" id="out"></div></div></div></div>
+<dialog id="ad"><div class="h"><b>AI suggestion</b><button class="btn" id="ax">Close</button></div><div style="padding:16px;display:grid;gap:12px"><textarea id="ar" rows="14" aria-label="AI suggestion"></textarea>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn p" id="arp">Replace</button><button class="btn" id="ain">Insert below</button><button class="btn" id="acp">Copy</button></div><small style="color:var(--mut)">AI can make mistakes. Review the text before using it.</small></div></dialog>`;
+const src=$('#src'),out=$('#out'),toc=$('#toc');src.value=d.md;$('#tg').value=d.tag;
+const upd=()=>{const m=src.value;out.innerHTML=html(m);const hs=$$('h1,h2,h3',out);hs.forEach((h,i)=>h.id=slug(h.textContent)||'s'+i);
+toc.hidden=hs.length<3;toc.innerHTML='<b>Contents</b>'+hs.map(h=>`<a href="#${h.id}" style="padding-left:${(+h.tagName[1]-1)*12}px">${esc(h.textContent)}</a>`).join('');
+$$('a',toc).forEach(a=>a.onclick=e=>{e.preventDefault();document.getElementById(a.hash.slice(1)).scrollIntoView({behavior:'smooth'})});
+const w=(m.trim().match(/\S+/g)||[]).length;$('#st').textContent=`Lines ${m.split('\n').length} · Words ${w} · Characters ${m.length} · ${Math.max(1,Math.round(w/200))} min read`;
+$('#ti').value=title(m);d.md=m;d.tag=$('#tg').value;store.set('db_draft',d)};
+src.oninput=upd;$('#tg').onchange=upd;upd();
+$$('[data-b]').forEach(b=>b.onclick=()=>{const[p,s,ph]=JSON.parse(b.dataset.b),a=src.selectionStart,z=src.selectionEnd,sel=src.value.slice(a,z)||ph||'';src.setRangeText(p+sel+s,a,z,'end');src.focus();upd()});
+$('#tp').onchange=e=>{if(e.target.value){if(!src.value.trim()||confirm('Replace the current text with this template?')){src.value=TPL[e.target.value];d.id=null;upd()}e.target.value=''}};
+const save=()=>{const l=docs(),t=title(src.value),it={id:d.id||'d'+Date.now(),title:t,tag:$('#tg').value,md:src.value,at:Date.now()},i=l.findIndex(x=>x.id===it.id);i<0?l.unshift(it):l[i]=it;d.id=it.id;store.set('db_docs',l);store.set('db_draft',d);sync('PUT','docs/'+it.id,it);toast(auth()?'Saved to your account':'Saved in this browser')};
+$('#sv').onclick=save;$('#eh').onclick=()=>exportHTML(src.value,title(src.value));$('#em').onclick=()=>download(slug(title(src.value))+'.md',src.value,'text/markdown');
+$('#im').onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{src.value=t;d.id=null;upd();toast('Imported '+f.name)})};
+$('#nw').onclick=()=>{if(confirm('Start a new document? Unsaved changes will be lost.')){src.value='# Untitled document\n\nStart writing here.\n';d.id=null;upd()}};
+let rng=[0,0];
+$$('[data-ai]').forEach(b=>b.onclick=async()=>{
+if(!auth()){toast('Log in to use the AI assistant.');return}
+const t=b.dataset.ai,a=src.selectionStart,z=src.selectionEnd,sel=src.value.slice(a,z),text=sel||src.value;let extra='';
+if(t==='generate'){extra=prompt('Describe the document you want (topic, audience, sections):')||'';if(!extra.trim())return}
+else if(!text.trim()){toast('Write some text first.');return}
+const n=src.value.length;rng=t==='generate'?[n,n]:sel?[a,z]:[0,n];const old=b.textContent;$$('[data-ai]').forEach(x=>x.disabled=true);b.textContent='Working…';
+try{const r=await cloud('POST','ai',{task:t,text,extra});$('#ar').value=r.result;$('#arp').textContent=t==='generate'?'Add to document':sel?'Replace selection':'Replace document';$('#aim').textContent=r.remaining+' AI requests left today';$('#ad').showModal()}
+catch(e){toast(e.message)}
+$$('[data-ai]').forEach(x=>x.disabled=false);b.textContent=old});
+$('#ax').onclick=()=>$('#ad').close();
+$('#arp').onclick=()=>{src.setRangeText($('#ar').value,rng[0],rng[1],'end');$('#ad').close();upd()};
+$('#ain').onclick=()=>{src.setRangeText('\n\n'+$('#ar').value+'\n',rng[1],rng[1],'end');$('#ad').close();upd()};
+$('#acp').onclick=()=>navigator.clipboard.writeText($('#ar').value).then(()=>toast('Copied'));
+src.onkeydown=e=>{if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();save()}if((e.ctrlKey||e.metaKey)&&e.key==='b'){e.preventDefault();$('[data-b]').click()}};
+}
+
+/* ---------- My Docs ---------- */
+function mydocs(){
+let tag='All',term='';
+$('#app').innerHTML=`<section style="padding-top:36px"><div class="wrap"><h1 style="font-size:2.2rem">Saved documents</h1><p style="color:var(--mut)" id="cnt"></p>
+<div class="top"><input id="q" type="search" placeholder="Search by title or content" aria-label="Search documents"><a class="btn p" href="/editor" data-nav>New document</a></div>
+<div class="chips" id="fl" style="margin-bottom:20px"></div><div class="grid" id="ls"></div></div></section><dialog id="dg"><div class="h"><b id="dt"></b><button class="btn" id="dc">Close</button></div><div class="md" id="db"></div></dialog>`;
+const draw=()=>{const all=docs(),l=all.filter(x=>(tag==='All'||x.tag===tag)&&(x.title+x.md).toLowerCase().includes(term));
+$('#cnt').textContent=all.length+' saved · '+l.length+' shown';
+$('#fl').innerHTML=['All',...TAGS].map(t=>`<button class="chip ${t===tag?'on':''}" data-t="${t}">${t}</button>`).join('');
+$$('[data-t]').forEach(b=>b.onclick=()=>{tag=b.dataset.t;draw()});
+$('#ls').innerHTML=l.length?l.map(x=>`<div class="card dc"><span class="chip">${esc(x.tag)}</span><h3 style="margin-top:8px">${esc(x.title)}</h3><small>Updated ${new Date(x.at).toLocaleString()}</small>
+<p style="margin-top:6px">${esc(x.md.replace(/[#*`>|_-]/g,' ').replace(/\s+/g,' ').slice(0,110))}…</p>
+<div class="a"><button class="btn" data-a="v" data-i="${x.id}">Preview</button><a class="btn" href="/editor?id=${x.id}" data-nav>Edit</a><button class="btn" data-a="c" data-i="${x.id}">Duplicate</button><button class="btn" data-a="e" data-i="${x.id}">Export</button><button class="btn d" data-a="d" data-i="${x.id}">Delete</button></div></div>`).join(''):'<div class="empty" style="grid-column:1/-1"><b>No documents match.</b><br>Clear the search or create a new document.</div>';
+$$('[data-a]').forEach(b=>b.onclick=()=>{const L=docs(),x=L.find(z=>z.id===b.dataset.i),a=b.dataset.a;
+if(a==='v'){$('#dt').textContent=x.title;$('#db').innerHTML=html(x.md);$('#dg').showModal()}
+if(a==='e')exportHTML(x.md,x.title);
+if(a==='c'){const cp={...x,id:'d'+Date.now(),title:x.title+' (copy)',at:Date.now()};L.unshift(cp);store.set('db_docs',L);sync('PUT','docs/'+cp.id,cp);draw();toast('Duplicated')}
+if(a==='d'&&confirm('Delete "'+x.title+'"? This cannot be undone.')){store.set('db_docs',L.filter(z=>z.id!==x.id));sync('DELETE','docs/'+x.id);draw();toast('Deleted')}})};
+$('#q').oninput=e=>{term=e.target.value.toLowerCase();draw()};$('#dc').onclick=()=>$('#dg').close();draw();if(auth())pull().then(draw).catch(e=>toast('Could not load cloud documents: '+e.message));
+}
+
+/* ---------- Cloud account (Netlify Functions + Blobs) ---------- */
+const auth=()=>store.get('db_auth',null);
+async function cloud(m,p,b){const a=auth();const r=await fetch('/api/'+p,{method:m,headers:{'content-type':'application/json',...(a?{authorization:'Bearer '+a.token}:{})},body:b?JSON.stringify(b):undefined});
+const d=await r.json().catch(()=>({error:'The server did not respond. Is the backend deployed?'}));
+if(r.status===401&&a&&p!=='login'){logout(true)}if(!r.ok)throw new Error(d.error||'Request failed');return d}
+const sync=(m,p,b)=>{if(auth())cloud(m,p,b).catch(e=>toast('Cloud sync failed: '+e.message))};
+async function pull(){const l=(await cloud('GET','docs')).docs||[];if(l.length)store.set('db_docs',l.sort((a,b)=>b.at-a.at));else for(const d of docs())await cloud('PUT','docs/'+d.id,d)}
+function navBar(){const a=auth(),n=$('#nl');n.textContent=a?'Log out ('+a.name+')':'Log in';n.href=a?'#':'/login';n.toggleAttribute('data-nav',!a)}
+function logout(expired){store.set('db_auth',null);store.set('db_docs',null);store.set('db_draft',null);navBar();toast(expired?'Session expired. Please log in again.':'Logged out');if(location.pathname!=='/login'){history.pushState(null,'','/login');route()}}
+function login(){let mode='login';
+$('#app').innerHTML=`<section style="padding-top:48px"><div class="wrap" style="max-width:420px"><h1 style="font-size:2rem">Your account</h1>
+<p style="color:var(--mut)">Log in to keep your documents in the cloud and open them on any device. Without an account, documents stay in this browser.</p>
+<div class="chips" style="margin:14px 0"><button class="chip on" data-m="login">Log in</button><button class="chip" data-m="register">Create account</button></div>
+<form id="af" class="card" style="display:grid;gap:12px"><input id="an" placeholder="Your name" autocomplete="name" hidden><input id="ae" type="email" required placeholder="Email" autocomplete="email">
+<input id="ap" type="password" required minlength="8" placeholder="Password (8+ characters)" autocomplete="current-password"><button class="btn p" id="ab" style="justify-content:center">Log in</button><small id="am" role="alert" style="color:#ef4444"></small></form></div></section>`;
+$$('[data-m]').forEach(b=>b.onclick=()=>{mode=b.dataset.m;$$('[data-m]').forEach(x=>x.classList.toggle('on',x===b));$('#an').hidden=mode==='login';$('#ab').textContent=b.textContent;$('#am').textContent=''});
+$('#af').onsubmit=async e=>{e.preventDefault();const bt=$('#ab');bt.disabled=true;$('#am').textContent='';
+try{const r=await cloud('POST',mode,{name:$('#an').value,email:$('#ae').value,password:$('#ap').value});store.set('db_auth',{token:r.token,...r.user});navBar();await pull();toast('Welcome, '+r.user.name);history.pushState(null,'','/my-docs');route()}
+catch(err){$('#am').textContent=err.message}bt.disabled=false}}
+
+/* ---------- Router + theme ---------- */
+function route(){const p=location.pathname.replace(/\/$/,'');
+$('#nd').classList.toggle('on',p==='/my-docs');$('#nl').classList.toggle('on',p==='/login');$('#ne').classList.toggle('on',p==='/editor');
+(p==='/editor'?editor:p==='/my-docs'?mydocs:p==='/login'?login:home)();
+document.title=(p==='/editor'?'Markdown Live Editor':p==='/my-docs'?'Saved Documents':p==='/login'?'Account':'Markdown Documentation Site Builder')+' | RCPIT Group 20';
+if(location.hash){const e=document.getElementById(location.hash.slice(1));e&&e.scrollIntoView()}else scrollTo(0,0)}
+document.addEventListener('click',e=>{const a=e.target.closest('a[data-nav]');if(a&&!e.ctrlKey&&!e.metaKey){e.preventDefault();history.pushState(null,'',a.getAttribute('href'));route()}});
+addEventListener('popstate',route);
+const setTheme=t=>{document.documentElement.dataset.theme=t;$('#th').textContent=t==='dark'?'Light mode':'Dark mode';store.set('db_theme',t)};
+$('#th').onclick=()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
+navBar();$('#nl').onclick=e=>{if(auth()){e.preventDefault();logout()}};setTheme(store.get('db_theme',matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'));
+route();
+</script>
+</body>
+</html>
