@@ -35,28 +35,29 @@ const PROMPTS = {
 };
 
 async function askAI(system, user) {
-  const model = process.env.AI_MODEL;
-  if (process.env.ANTHROPIC_API_KEY) {
+  // Own variable names on purpose: Netlify auto-injects placeholder ANTHROPIC_API_KEY / GEMINI_API_KEY values
+  // for its AI Gateway, which would break direct calls to the providers.
+  const key = process.env.AI_API_KEY, model = process.env.AI_MODEL;
+  const provider = (process.env.AI_PROVIDER || "gemini").toLowerCase();
+  if (!key) throw new Error("AI_NOT_CONFIGURED");
+  if (provider === "anthropic") {
     const r = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
-      headers: { "content-type": "application/json", "x-api-key": process.env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01" },
+      headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01" },
       body: JSON.stringify({ model: model || "claude-haiku-5-5", max_tokens: 2000, system, messages: [{ role: "user", content: user }] }),
     });
     const d = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error("AI_PROVIDER:" + (d.error?.message || r.status));
     return (d.content || []).map((c) => c.text || "").join("");
   }
-  if (process.env.GEMINI_API_KEY) {
-    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model || "gemini-2.5-flash"}:generateContent`, {
-      method: "POST",
-      headers: { "content-type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY },
-      body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents: [{ role: "user", parts: [{ text: user }] }], generationConfig: { maxOutputTokens: 4000 } }),
-    });
-    const d = await r.json().catch(() => ({}));
-    if (!r.ok) throw new Error("AI_PROVIDER:" + (d.error?.message || r.status));
-    return (d.candidates?.[0]?.content?.parts || []).map((p) => p.text || "").join("");
-  }
-  throw new Error("AI_NOT_CONFIGURED");
+  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model || "gemini-2.5-flash"}:generateContent`, {
+    method: "POST",
+    headers: { "content-type": "application/json", "x-goog-api-key": key },
+    body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents: [{ role: "user", parts: [{ text: user }] }], generationConfig: { maxOutputTokens: 4000 } }),
+  });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error("AI_PROVIDER:" + (d.error?.message || r.status));
+  return (d.candidates?.[0]?.content?.parts || []).map((p) => p.text || "").join("");
 }
 
 export default async (req) => {
@@ -123,7 +124,7 @@ export default async (req) => {
     return fail("Not found.", 404);
   } catch (e) {
     const msg = String(e.message);
-    if (msg === "AI_NOT_CONFIGURED") return fail("The AI assistant is not set up yet. Add GEMINI_API_KEY or ANTHROPIC_API_KEY in Netlify environment variables.", 503);
+    if (msg === "AI_NOT_CONFIGURED") return fail("The AI assistant is not set up yet. Add AI_API_KEY (your Gemini key) in Netlify environment variables.", 503);
     if (msg.startsWith("AI_PROVIDER:")) return fail("The AI service returned an error: " + msg.slice(12), 502);
     return fail(msg.includes("AUTH_SECRET") ? msg : "Server error. Please try again.", 500);
   }
