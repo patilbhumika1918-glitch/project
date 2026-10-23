@@ -40,7 +40,7 @@ async function gemini(key, model, system, user, signal) {
   const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
     method: "POST", signal,
     headers: { "content-type": "application/json", "x-goog-api-key": key },
-    body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents: [{ role: "user", parts: [{ text: user }] }], generationConfig: { maxOutputTokens: 4000 } }),
+    body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents: [{ role: "user", parts: [{ text: user }] }], generationConfig: { maxOutputTokens: 2500 } }),
   });
   const d = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(d.error?.message || String(r.status));
@@ -100,7 +100,7 @@ async function askAI(system, user) {
   const t0 = Date.now();
   let last = "";
   for (const p of chain) {
-    const left = 9000 - (Date.now() - t0);
+    const left = 7000 - (Date.now() - t0); // answer before Netlify's ~10 s function limit
     if (left < 1500) break;
     try {
       return { text: await p.run(system, user, AbortSignal.timeout(left)), by: p.name };
@@ -108,7 +108,8 @@ async function askAI(system, user) {
       last = String(e.name === "TimeoutError" ? "timed out" : e.message).slice(0, 200);
     }
   }
-  throw new Error("AI_PROVIDER:All configured AI services failed or were busy. Last error: " + (last || "none"));
+  const slow = /timed out/i.test(last);
+  throw new Error("AI_PROVIDER:" + (slow ? "The AI was too slow (Netlify stops functions after about 10 seconds). Try again, or select less text." : "All configured AI services failed or were busy. Last error: " + (last || "none")));
 }
 
 export default async (req) => {
