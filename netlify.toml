@@ -1,6 +1,11 @@
 [build]
   publish = "."
 
+[build.environment]
+  # A model name is not a secret. Without this, Netlify's secrets scan fails the build
+  # because the default model name in api.mjs matches the AI_MODEL variable.
+  SECRETS_SCAN_OMIT_KEYS = "AI_MODEL"
+
 [functions]
   directory = "netlify/functions"
 
